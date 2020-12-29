@@ -1,5 +1,4 @@
-﻿using SergeyCoreNF.Registry;
-using System;
+﻿using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -106,15 +105,15 @@ namespace Backup
         {
             try
             {
-                if (((Button)sender).Tag.ToString() == "0")
-                {
-                    string iconPath = $"{Path.GetDirectoryName(Application.ResourceAssembly.Location)}\\ExtensionIco.ico";
-                    if (File.Exists(iconPath) == false)
-                        iconPath = null;
-                    Registry.AssociateExtension(".baclist", App.ProgramName, Application.ResourceAssembly.Location, iconPath);
-                }
-                else
-                    Registry.RemoveAssociateExtension(".baclist", App.ProgramName);
+                //if (((Button)sender).Tag.ToString() == "0")
+                //{
+                //    string iconPath = $"{Path.GetDirectoryName(Application.ResourceAssembly.Location)}\\ExtensionIco.ico";
+                //    if (File.Exists(iconPath) == false)
+                //        iconPath = null;
+                //    Registry.AssociateExtension(".baclist", App.ProgramName, Application.ResourceAssembly.Location, iconPath);
+                //}
+                //else
+                //    Registry.RemoveAssociateExtension(".baclist", App.ProgramName);
             }
             catch (Exception ex)
             {

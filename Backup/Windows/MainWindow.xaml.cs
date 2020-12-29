@@ -63,17 +63,30 @@ namespace Backup
                 {
                     if (sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                     {
-                        using (StreamWriter streamWriter = new StreamWriter(sfd.FileName, false, Encoding.UTF8))
+                        using (FileStream fileStream = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write))
                         {
-                            for (int i = 0; i < dataGridSourse.Count; i++)
+                            using (BinaryWriter binaryWriter = new BinaryWriter(fileStream))
                             {
-                                streamWriter.WriteLine("BI-" + i + " {");
-                                streamWriter.WriteLine($"Enabled={dataGridSourse[i].IsEnabled}");
-                                streamWriter.WriteLine($"Path={dataGridSourse[i].Path}");
-                                streamWriter.WriteLine($"File={dataGridSourse[i].IsFile}");
-                                streamWriter.WriteLine("}");
+                                binaryWriter.Write(dataGridSourse.Count);
+                                foreach (BackupItem item in dataGridSourse)
+                                {
+                                    binaryWriter.Write(item.IsEnabled);
+                                    binaryWriter.Write(item.IsFile);
+                                    binaryWriter.Write(item.Path);
+                                }
                             }
                         }
+                        //using (StreamWriter streamWriter = new StreamWriter(sfd.FileName, false, Encoding.UTF8))
+                        //{
+                        //    for (int i = 0; i < dataGridSourse.Count; i++)
+                        //    {
+                        //        streamWriter.WriteLine("BI-" + i + " {");
+                        //        streamWriter.WriteLine($"Enabled={dataGridSourse[i].IsEnabled}");
+                        //        streamWriter.WriteLine($"Path={dataGridSourse[i].Path}");
+                        //        streamWriter.WriteLine($"File={dataGridSourse[i].IsFile}");
+                        //        streamWriter.WriteLine("}");
+                        //    }
+                        //}
                     }
                 }
             }
@@ -210,21 +223,38 @@ namespace Backup
             try
             {
                 dataGridSourse.Clear();
-                using (StreamReader streamReader = new StreamReader(filepath, Encoding.UTF8, true))
+                using (FileStream fileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read))
                 {
-                    while (!streamReader.EndOfStream)
+                    using (BinaryReader binaryReader = new BinaryReader(fileStream))
                     {
-                        streamReader.ReadLine();
-                        BackupItem backupItem = new BackupItem
+                        int count = binaryReader.ReadInt32();
+                        for (int i = 0; i < count; i++)
                         {
-                            IsEnabled = Convert.ToBoolean(streamReader.ReadLine().Remove(0, 8)),
-                            Path = streamReader.ReadLine().Remove(0, 5),
-                            IsFile = Convert.ToBoolean(streamReader.ReadLine().Remove(0, 5))
-                        };
-                        dataGridSourse.Add(backupItem);
-                        streamReader.ReadLine();
+                            BackupItem backupItem = new BackupItem
+                            {
+                                IsEnabled = binaryReader.ReadBoolean(),
+                                IsFile = binaryReader.ReadBoolean(),
+                                Path = binaryReader.ReadString()
+                            };
+                            dataGridSourse.Add(backupItem);
+                        }
                     }
                 }
+                //using (StreamReader streamReader = new StreamReader(filepath, Encoding.UTF8, true))
+                //{
+                //    while (!streamReader.EndOfStream)
+                //    {
+                //        streamReader.ReadLine();
+                //        BackupItem backupItem = new BackupItem
+                //        {
+                //            IsEnabled = Convert.ToBoolean(streamReader.ReadLine().Remove(0, 8)),
+                //            Path = streamReader.ReadLine().Remove(0, 5),
+                //            IsFile = Convert.ToBoolean(streamReader.ReadLine().Remove(0, 5))
+                //        };
+                //        dataGridSourse.Add(backupItem);
+                //        streamReader.ReadLine();
+                //    }
+                //}
             }
             catch (Exception ex)
             {

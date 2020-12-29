@@ -1,12 +1,5 @@
 ﻿using Backup.Classes;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace Backup
@@ -19,7 +12,7 @@ namespace Backup
         /// <summary>
         /// Настройки программы
         /// </summary>
-        public static SettingsProgram Settings { get; private set; } = new SettingsProgram();
+        public static SettingsProgram Settings { get; private set; }
         /// <summary>
         /// Название программы
         /// </summary>
@@ -28,43 +21,31 @@ namespace Backup
         [STAThread]
         private static void Main()
         {
-            AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(AssemblyResolveHandler);
-            App application = new App();
-            application.InitializeComponent();
-            application.Run();
-        }
-
-        /// <summary>
-        /// Отлавливаем ошибки загрузки сборок, если ядоро не найдено - пытаемся загрузить его из другого места 
-        /// </summary>
-        private static Assembly AssemblyResolveHandler(object sender, ResolveEventArgs args)
-        {
-            Assembly assembly = null;
-            if (args.Name.Contains("SergeyCoreNF"))
-            {
-                string snc = $"{Path.GetDirectoryName(Path.GetDirectoryName(ResourceAssembly.Location))}\\SergeyCoreNF.dll";
-                if (File.Exists(snc))
-                {
-                    AssemblyName asName = AssemblyName.GetAssemblyName(snc);
-                    assembly = Assembly.Load(asName);
-                }
-            }
-            return assembly;
-        }
-
-        private void Application_Startup(object sender, StartupEventArgs e)
-        {
             try
             {
-                Settings.Load();
-                MainWindow = new MainWindow();
-                MainWindow.Show();
+                App application = new App();
+                application.InitializeComponent();
+                application.Run();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, ProgramName, MessageBoxButton.OK, MessageBoxImage.Error);
-                Shutdown();
             }
+        }
+
+        private void Application_Startup(object sender, StartupEventArgs e)
+        {
+            //try
+            //{
+            Settings = SettingsProgram.GetInstance();
+            MainWindow = new MainWindow();
+            MainWindow.Show();
+            //}
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show(ex.Message, ProgramName, MessageBoxButton.OK, MessageBoxImage.Error);
+            //    Shutdown();
+            //}
         }
     }
 }
