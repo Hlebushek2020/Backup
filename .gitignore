@@ -1,0 +1,6 @@
+# DIRECTORIES
+/Backup/VS_Output/*
+/.vs/*
+# FILES
+*Thumbs.db
+*.user

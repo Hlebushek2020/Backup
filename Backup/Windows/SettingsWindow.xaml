@@ -1,0 +1,84 @@
+﻿<Window x:Class="Backup.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Backup"
+        xmlns:System="clr-namespace:System;assembly=mscorlib" 
+        mc:Ignorable="d"
+        Title="Backup" 
+        FontSize="14"
+        Height="480" 
+        Width="700" 
+        WindowStartupLocation="CenterScreen" 
+        ResizeMode="CanMinimize"
+        Closing="Window_Closing"
+        PreviewKeyDown="Window_PreviewKeyDown">
+    <Window.Resources>
+        <!-- GROUPBOX STYLE -->
+        <Style TargetType="GroupBox">
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="FontWeight" Value="Medium" />
+        </Style>
+        <!-- CHECKBOX STYLE -->
+        <Style TargetType="CheckBox" BasedOn="{StaticResource BaseCheckBoxStyle}">
+            <Setter Property="FontWeight" Value="Normal" />
+        </Style>
+        <!-- LABEL STYLE -->
+        <Style TargetType="Label">
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="FontWeight" Value="Normal" />
+        </Style>
+        <!-- COMBOBOX STYLE -->
+        <Style TargetType="ComboBox">
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="Width" Value="150" />
+        </Style>
+        <!-- RADIOBUTTON STYLE -->
+        <Style TargetType="RadioButton">
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="FontWeight" Value="Normal" />
+        </Style>
+        <!--BUTTON STYLE--> 
+        <Style TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
+            <Setter Property="FontWeight" Value="Normal"/>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <GroupBox Header="{DynamicResource sw_MainGroup}" Height="187" Margin="10,10,10,0">
+            <Grid Loaded="Grid_Main_Loaded">
+                <CheckBox x:Name="checkBox_WriteLog" Content="{DynamicResource sw_WriteLog}" Margin="10,39,0,0" />
+                <CheckBox x:Name="checkBox_CloseAfterBackup" Content="{DynamicResource sw_CloseAfterBackup}" Margin="10,62,0,0" />
+                <Label x:Name="label_CompressLevel" Content="{DynamicResource sw_Compress}" Margin="10,83,0,0" />
+                <ComboBox x:Name="comboBox_CompessLevel" Margin="121,85,0,0"/>
+                <RadioButton x:Name="radioButton_StandartMode" Content="{DynamicResource sw_StandartMode}" Margin="10,114,0,0" Checked="RadioButton_StandartMode_Checked" />
+                <RadioButton x:Name="radioButton_WinRarMode" Content="{DynamicResource sw_WinRarMode}" Margin="10,136,0,0" Checked="RadioButton_WinRarMode_Checked" />
+                <Label x:Name="label_Language" Content="{DynamicResource sw_Language}" Margin="10,8,0,0"/>
+                <ComboBox x:Name="comboBox_Language" Margin="58,10,0,0" />
+            </Grid>
+        </GroupBox>
+        <GroupBox x:Name="groupBox_WinRar" Header="WinRar" Height="115" Margin="10,202,10,0">
+            <Grid>
+                <Button x:Name="button_WinRarPath" Content="{DynamicResource sw_WinRarExe}" Margin="10,10,10,0" Click="Button_WinRarPath_Click" />
+                <TextBlock x:Name="textBlock_WinRarPath" Height="38" Margin="10,45,10,0" TextWrapping="Wrap" VerticalAlignment="Top" FontWeight="Normal"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="{DynamicResource sw_ExtraGroup}" Height="76" Margin="10,322,10,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button Content="{DynamicResource sw_Association}" Grid.Column="0" Margin="10,10,5,0" Tag="0" Click="Button_Extension_Click" />
+                <Button Content="{DynamicResource sw_RemoveAssociation}" Grid.Column="1" Margin="5,10,10,0" Tag="1" Click="Button_Extension_Click" />
+            </Grid>
+        </GroupBox>
+        <Button Content="{DynamicResource sw_Close}" Margin="10,403,10,0" Click="Button_Close_Click" />
+    </Grid>
+</Window>
