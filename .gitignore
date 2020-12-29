@@ -1,5 +1,6 @@
 # DIRECTORIES
 /Backup/VS_Output/*
+/packages/*
 /.vs/*
 # FILES
 *Thumbs.db
