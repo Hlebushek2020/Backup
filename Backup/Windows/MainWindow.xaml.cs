@@ -1,6 +1,7 @@
 ﻿using Backup.Classes;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -20,7 +21,8 @@ namespace Backup
         /// <summary>
         /// Список элементов для отображения в DataGrid
         /// </summary>
-        private readonly List<BackupItem> dataGridSourse = new List<BackupItem>();
+        private readonly ObservableCollection<BackupItem> dataGridSourse = new ObservableCollection<BackupItem>();
+        
         
         public MainWindow()
         {
@@ -103,10 +105,11 @@ namespace Backup
         {
             AddBackupItemWindow addBackupItemWindow = new AddBackupItemWindow();
             addBackupItemWindow.ShowDialog();
-            if (addBackupItemWindow.AddBackupItem)
+            BackupItem backupItem = addBackupItemWindow.BackupItem;
+            if (backupItem != null)
             {
-                dataGridSourse.Add(addBackupItemWindow.BackupItem);
-                dataGrid_BackupList.Items.Refresh();
+                dataGridSourse.Add(backupItem);
+                //dataGrid_BackupList.Items.Refresh();
             }
         }
 
@@ -121,7 +124,7 @@ namespace Backup
                 if (MessageBox.Show(string.Format((string)Application.Current.Resources.MergedDictionaries[0]["mw_InfoDelete"], dataGridSourse[index].Path), Title, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {
                     dataGridSourse.RemoveAt(index);
-                    dataGrid_BackupList.Items.Refresh();
+                    //dataGrid_BackupList.Items.Refresh();
                 }
             }
         }
@@ -167,10 +170,10 @@ namespace Backup
         {
             int index = dataGrid_BackupList.SelectedIndex;
             if (index != -1)
-            {
+            //{
                 dataGridSourse[index].IsEnabled = !dataGridSourse[index].IsEnabled;
-                dataGrid_BackupList.Items.Refresh();
-            }
+                //dataGrid_BackupList.Items.Refresh();
+            //}
         }
 
         private void DataGrid_BackupList_MouseDoubleClick(object sender, MouseButtonEventArgs e) =>
@@ -179,19 +182,19 @@ namespace Backup
         private void MenuItem_SortByPath_Click(object sender, RoutedEventArgs e)
         {
             if (dataGridSourse.Count != 0)
-            {
-                dataGridSourse.Sort((x, y) => x.Path.CompareTo(y.Path));
-                dataGrid_BackupList.Items.Refresh();
-            }
+            //{
+                dataGridSourse.OrderBy(x => x.Path);
+                //dataGrid_BackupList.Items.Refresh();
+            //}
         }
 
         private void MenuItem_SortByMarkBackup_Click(object sender, RoutedEventArgs e)
         {
             if (dataGridSourse.Count != 0)
-            {
-                dataGridSourse.Sort((x, y) => y.IsEnabled.CompareTo(x.IsEnabled));
-                dataGrid_BackupList.Items.Refresh();
-            }
+            //{
+                dataGridSourse.OrderBy(x => x.IsEnabled);
+                //dataGrid_BackupList.Items.Refresh();
+            //}
         }
 
         /// <summary>
@@ -230,12 +233,8 @@ namespace Backup
                         int count = binaryReader.ReadInt32();
                         for (int i = 0; i < count; i++)
                         {
-                            BackupItem backupItem = new BackupItem
-                            {
-                                IsEnabled = binaryReader.ReadBoolean(),
-                                IsFile = binaryReader.ReadBoolean(),
-                                Path = binaryReader.ReadString()
-                            };
+                            BackupItem backupItem = new BackupItem(binaryReader.ReadBoolean(),
+                                binaryReader.ReadBoolean(), binaryReader.ReadString());
                             dataGridSourse.Add(backupItem);
                         }
                     }
@@ -261,7 +260,7 @@ namespace Backup
                 dataGridSourse.Clear();
                 MessageBox.Show(ex.Message, Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            dataGrid_BackupList.Items.Refresh();
+            //dataGrid_BackupList.Items.Refresh();
         }
 
         /// <summary>

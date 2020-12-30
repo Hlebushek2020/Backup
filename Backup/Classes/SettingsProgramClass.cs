@@ -92,7 +92,7 @@ namespace Backup.Classes
             string settingsFile = $"{ProgramResourceFolder}\\settings.json";
             if (File.Exists(settingsFile))
                 return JsonConvert.DeserializeObject<SettingsProgram>(File.ReadAllText(settingsFile, Encoding.UTF8));
-            return new SettingsProgram();
+            return new SettingsProgram { Language = "english" };
         }
     }
 }

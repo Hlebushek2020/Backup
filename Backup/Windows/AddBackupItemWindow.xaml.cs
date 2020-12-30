@@ -13,14 +13,10 @@ namespace Backup
         /// </summary>
         private readonly ResourceDictionary localization = Application.Current.Resources.MergedDictionaries[0];
 
-        /// <summary>
-        /// Объект для добавления в список
-        /// </summary>
-        public BackupItem BackupItem { get; private set; } = new BackupItem();
-        /// <summary>
-        /// Флаг указывающий добавлять элемент или нет
-        /// </summary>
-        public bool AddBackupItem { get; private set; } = false;
+        private string biPath;
+        private bool biIsFile;
+
+        public BackupItem BackupItem { get; private set; } = null;
 
         public AddBackupItemWindow()
         {
@@ -35,9 +31,9 @@ namespace Backup
             {
                 if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    BackupItem.Path = ofd.FileName;
-                    BackupItem.IsFile = true;
-                    textBlock_Path.Text = string.Format((string)localization["abiw_InfoSelectFileName"], BackupItem.Path);
+                    biPath = ofd.FileName;
+                    biIsFile = true;
+                    textBlock_Path.Text = string.Format((string)localization["abiw_InfoSelectFileName"], biPath);
                 }
             }
         }
@@ -48,9 +44,9 @@ namespace Backup
             {
                 if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    BackupItem.Path = fbd.SelectedPath;
-                    BackupItem.IsFile = false;
-                    textBlock_Path.Text = string.Format((string)localization["abiw_InfoSelectDirectoryPath"], BackupItem.Path);
+                    biPath = fbd.SelectedPath;
+                    biIsFile = false;
+                    textBlock_Path.Text = string.Format((string)localization["abiw_InfoSelectDirectoryPath"], biPath);
                 }
             }
         }
@@ -60,18 +56,18 @@ namespace Backup
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (string.IsNullOrEmpty(BackupItem.Path) == false || checkBox_Backup.IsChecked == true)
+            if (string.IsNullOrEmpty(biPath) == false || checkBox_Backup.IsChecked == true)
             {
-                BackupItem.IsEnabled = checkBox_Backup.IsChecked.Value;
+                //BackupItem.IsEnabled = checkBox_Backup.IsChecked.Value;
                 if (MessageBox.Show((string)localization["abiw_InfoSave"], this.Title, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {
-                    if (string.IsNullOrEmpty(BackupItem.Path))
+                    if (string.IsNullOrEmpty(biPath))
                     {
                         e.Cancel = true;
                         MessageBox.Show((string)localization["abiw_InfoSaveWarning"], this.Title, MessageBoxButton.OK, MessageBoxImage.Warning);            
                     }
                     else
-                        AddBackupItem = true;
+                        BackupItem = new BackupItem(checkBox_Backup.IsChecked.Value, biIsFile, biPath);
                 }
             }
         }

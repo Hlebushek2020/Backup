@@ -119,9 +119,9 @@
                     </Style>
                 </DataGrid.CellStyle>
                 <DataGrid.Columns>
-                    <DataGridCheckBoxColumn Header="{DynamicResource mw_TableMarkBackup}" IsReadOnly="True" Binding="{Binding IsEnabled}"/>
-                    <DataGridTextColumn Header="{DynamicResource mw_TablePath}" IsReadOnly="True" Binding="{Binding Path}"/>
-                    <DataGridCheckBoxColumn Header="{DynamicResource mw_TableMarkFile}" IsReadOnly="True" Binding="{Binding IsFile}"/>
+                    <DataGridCheckBoxColumn Header="{DynamicResource mw_TableMarkBackup}" IsReadOnly="True" Binding="{Binding IsEnabled, Mode=TwoWay}"/>
+                    <DataGridTextColumn Header="{DynamicResource mw_TablePath}" IsReadOnly="True" Binding="{Binding Path, Mode=OneWay}"/>
+                    <DataGridCheckBoxColumn Header="{DynamicResource mw_TableMarkFile}" IsReadOnly="True" Binding="{Binding IsFile, Mode=OneWay}"/>
                 </DataGrid.Columns>
                 <DataGrid.ContextMenu>
                     <ContextMenu>
