@@ -10,6 +10,9 @@ namespace Backup.Classes
 {
     public class SettingsProgram
     {
+        [JsonIgnore]
+        public static string ProgramResourceFolder { get; } = $"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}\\SergeyGovorunov\\{App.ProgramName}";
+
         #region Language
         [JsonIgnore]
         private string language;
@@ -73,8 +76,8 @@ namespace Backup.Classes
         /// </summary>
         public SolidColorBrush ProgressColor { get; set; } = Brushes.Green;
 
-        [JsonIgnore]
-        public static string ProgramResourceFolder { get; } = $"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}\\SergeyGovorunov\\{App.ProgramName}";
+        public SettingsProgram() => Language = "english";
+
         /// <summary>
         /// Сохранение
         /// </summary>
@@ -92,7 +95,7 @@ namespace Backup.Classes
             string settingsFile = $"{ProgramResourceFolder}\\settings.json";
             if (File.Exists(settingsFile))
                 return JsonConvert.DeserializeObject<SettingsProgram>(File.ReadAllText(settingsFile, Encoding.UTF8));
-            return new SettingsProgram { Language = "english" };
+            return new SettingsProgram();
         }
     }
 }
