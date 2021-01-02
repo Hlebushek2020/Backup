@@ -1,6 +1,7 @@
 ﻿using Backup.Classes;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -20,7 +21,8 @@ namespace Backup
         /// <summary>
         /// Список элементов для отображения в DataGrid
         /// </summary>
-        private readonly List<BackupItem> dataGridSourse = new List<BackupItem>();
+        private readonly ObservableCollection<BackupItem> dataGridSourse = new ObservableCollection<BackupItem>();
+        
         
         public MainWindow()
         {
@@ -63,17 +65,30 @@ namespace Backup
                 {
                     if (sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                     {
-                        using (StreamWriter streamWriter = new StreamWriter(sfd.FileName, false, Encoding.UTF8))
+                        using (FileStream fileStream = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write))
                         {
-                            for (int i = 0; i < dataGridSourse.Count; i++)
+                            using (BinaryWriter binaryWriter = new BinaryWriter(fileStream))
                             {
-                                streamWriter.WriteLine("BI-" + i + " {");
-                                streamWriter.WriteLine($"Enabled={dataGridSourse[i].IsEnabled}");
-                                streamWriter.WriteLine($"Path={dataGridSourse[i].Path}");
-                                streamWriter.WriteLine($"File={dataGridSourse[i].IsFile}");
-                                streamWriter.WriteLine("}");
+                                binaryWriter.Write(dataGridSourse.Count);
+                                foreach (BackupItem item in dataGridSourse)
+                                {
+                                    binaryWriter.Write(item.IsEnabled);
+                                    binaryWriter.Write(item.IsFile);
+                                    binaryWriter.Write(item.Path);
+                                }
                             }
                         }
+                        //using (StreamWriter streamWriter = new StreamWriter(sfd.FileName, false, Encoding.UTF8))
+                        //{
+                        //    for (int i = 0; i < dataGridSourse.Count; i++)
+                        //    {
+                        //        streamWriter.WriteLine("BI-" + i + " {");
+                        //        streamWriter.WriteLine($"Enabled={dataGridSourse[i].IsEnabled}");
+                        //        streamWriter.WriteLine($"Path={dataGridSourse[i].Path}");
+                        //        streamWriter.WriteLine($"File={dataGridSourse[i].IsFile}");
+                        //        streamWriter.WriteLine("}");
+                        //    }
+                        //}
                     }
                 }
             }
@@ -90,10 +105,11 @@ namespace Backup
         {
             AddBackupItemWindow addBackupItemWindow = new AddBackupItemWindow();
             addBackupItemWindow.ShowDialog();
-            if (addBackupItemWindow.AddBackupItem)
+            BackupItem backupItem = addBackupItemWindow.BackupItem;
+            if (backupItem != null)
             {
-                dataGridSourse.Add(addBackupItemWindow.BackupItem);
-                dataGrid_BackupList.Items.Refresh();
+                dataGridSourse.Add(backupItem);
+                //dataGrid_BackupList.Items.Refresh();
             }
         }
 
@@ -108,7 +124,7 @@ namespace Backup
                 if (MessageBox.Show(string.Format((string)Application.Current.Resources.MergedDictionaries[0]["mw_InfoDelete"], dataGridSourse[index].Path), Title, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {
                     dataGridSourse.RemoveAt(index);
-                    dataGrid_BackupList.Items.Refresh();
+                    //dataGrid_BackupList.Items.Refresh();
                 }
             }
         }
@@ -154,10 +170,10 @@ namespace Backup
         {
             int index = dataGrid_BackupList.SelectedIndex;
             if (index != -1)
-            {
+            //{
                 dataGridSourse[index].IsEnabled = !dataGridSourse[index].IsEnabled;
-                dataGrid_BackupList.Items.Refresh();
-            }
+                //dataGrid_BackupList.Items.Refresh();
+            //}
         }
 
         private void DataGrid_BackupList_MouseDoubleClick(object sender, MouseButtonEventArgs e) =>
@@ -166,19 +182,19 @@ namespace Backup
         private void MenuItem_SortByPath_Click(object sender, RoutedEventArgs e)
         {
             if (dataGridSourse.Count != 0)
-            {
-                dataGridSourse.Sort((x, y) => x.Path.CompareTo(y.Path));
-                dataGrid_BackupList.Items.Refresh();
-            }
+            //{
+                dataGridSourse.OrderBy(x => x.Path);
+                //dataGrid_BackupList.Items.Refresh();
+            //}
         }
 
         private void MenuItem_SortByMarkBackup_Click(object sender, RoutedEventArgs e)
         {
             if (dataGridSourse.Count != 0)
-            {
-                dataGridSourse.Sort((x, y) => y.IsEnabled.CompareTo(x.IsEnabled));
-                dataGrid_BackupList.Items.Refresh();
-            }
+            //{
+                dataGridSourse.OrderBy(x => x.IsEnabled);
+                //dataGrid_BackupList.Items.Refresh();
+            //}
         }
 
         /// <summary>
@@ -210,28 +226,41 @@ namespace Backup
             try
             {
                 dataGridSourse.Clear();
-                using (StreamReader streamReader = new StreamReader(filepath, Encoding.UTF8, true))
+                using (FileStream fileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read))
                 {
-                    while (!streamReader.EndOfStream)
+                    using (BinaryReader binaryReader = new BinaryReader(fileStream))
                     {
-                        streamReader.ReadLine();
-                        BackupItem backupItem = new BackupItem
+                        int count = binaryReader.ReadInt32();
+                        for (int i = 0; i < count; i++)
                         {
-                            IsEnabled = Convert.ToBoolean(streamReader.ReadLine().Remove(0, 8)),
-                            Path = streamReader.ReadLine().Remove(0, 5),
-                            IsFile = Convert.ToBoolean(streamReader.ReadLine().Remove(0, 5))
-                        };
-                        dataGridSourse.Add(backupItem);
-                        streamReader.ReadLine();
+                            BackupItem backupItem = new BackupItem(binaryReader.ReadBoolean(),
+                                binaryReader.ReadBoolean(), binaryReader.ReadString());
+                            dataGridSourse.Add(backupItem);
+                        }
                     }
                 }
+                //using (StreamReader streamReader = new StreamReader(filepath, Encoding.UTF8, true))
+                //{
+                //    while (!streamReader.EndOfStream)
+                //    {
+                //        streamReader.ReadLine();
+                //        BackupItem backupItem = new BackupItem
+                //        {
+                //            IsEnabled = Convert.ToBoolean(streamReader.ReadLine().Remove(0, 8)),
+                //            Path = streamReader.ReadLine().Remove(0, 5),
+                //            IsFile = Convert.ToBoolean(streamReader.ReadLine().Remove(0, 5))
+                //        };
+                //        dataGridSourse.Add(backupItem);
+                //        streamReader.ReadLine();
+                //    }
+                //}
             }
             catch (Exception ex)
             {
                 dataGridSourse.Clear();
                 MessageBox.Show(ex.Message, Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            dataGrid_BackupList.Items.Refresh();
+            //dataGrid_BackupList.Items.Refresh();
         }
 
         /// <summary>

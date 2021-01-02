@@ -1,4 +1,4 @@
-﻿using SergeyCoreNF.Registry;
+﻿using SergeyRegistryExtension;
 using System;
 using System.IO;
 using System.Windows;
@@ -102,19 +102,26 @@ namespace Backup
             }
         }
 
-        private void Button_Extension_Click(object sender, RoutedEventArgs e)
+        private void Button_AssociationExtension_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                if (((Button)sender).Tag.ToString() == "0")
-                {
-                    string iconPath = $"{Path.GetDirectoryName(Application.ResourceAssembly.Location)}\\ExtensionIco.ico";
-                    if (File.Exists(iconPath) == false)
-                        iconPath = null;
-                    Registry.AssociateExtension(".baclist", App.ProgramName, Application.ResourceAssembly.Location, iconPath);
-                }
-                else
-                    Registry.RemoveAssociateExtension(".baclist", App.ProgramName);
+                string iconPath = $"{Path.GetDirectoryName(Application.ResourceAssembly.Location)}\\Extension.ico";
+                if (File.Exists(iconPath) == false)
+                    iconPath = null;
+                Registry.AssociateExtension(".baclist", App.ProgramName, Application.ResourceAssembly.Location, iconPath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, Title, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void Button_RemoveAssociationExtension_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Registry.RemoveAssociateExtension(".baclist", App.ProgramName);
             }
             catch (Exception ex)
             {

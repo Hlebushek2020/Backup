@@ -75,8 +75,8 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Button Content="{DynamicResource sw_Association}" Grid.Column="0" Margin="10,10,5,0" Tag="0" Click="Button_Extension_Click" />
-                <Button Content="{DynamicResource sw_RemoveAssociation}" Grid.Column="1" Margin="5,10,10,0" Tag="1" Click="Button_Extension_Click" />
+                <Button Content="{DynamicResource sw_Association}" Grid.Column="0" Margin="10,10,5,0" Click="Button_AssociationExtension_Click" />
+                <Button Content="{DynamicResource sw_RemoveAssociation}" Grid.Column="1" Margin="5,10,10,0" Click="Button_RemoveAssociationExtension_Click" />
             </Grid>
         </GroupBox>
         <Button Content="{DynamicResource sw_Close}" Margin="10,403,10,0" Click="Button_Close_Click" />

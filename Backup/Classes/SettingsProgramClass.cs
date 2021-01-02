@@ -1,8 +1,8 @@
-﻿using SergeyCoreNF.File;
-using SergeyCoreNF.Registry;
+﻿using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Media;
 
@@ -10,7 +10,11 @@ namespace Backup.Classes
 {
     public class SettingsProgram
     {
+        [JsonIgnore]
+        public static string ProgramResourceFolder { get; } = $"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}\\SergeyGovorunov\\{App.ProgramName}";
+
         #region Language
+        [JsonIgnore]
         private string language;
         /// <summary>
         /// Язык
@@ -70,65 +74,28 @@ namespace Backup.Classes
         /// <summary>
         /// Цвет полоски прогресса
         /// </summary>
-        public SolidColorBrush ProgressColor { get; private set; } = Brushes.Green;
-        /// <summary>
-        /// Путь к конфигу
-        /// </summary>
-        private string pathConfig = $"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}\\Sergey Govorunov\\Settings";
+        public SolidColorBrush ProgressColor { get; set; } = Brushes.Green;
+
+        public SettingsProgram() => Language = "english";
+
         /// <summary>
         /// Сохранение
         /// </summary>
         public void Save()
         {
-            if (!Directory.Exists(pathConfig))
-                Directory.CreateDirectory(pathConfig);
-            ConfigFile config = new ConfigFile($"{pathConfig}\\{App.ProgramName}.cfg");
-            config.Config.Add(";0", "DO NOT EDIT THIS SECTION");
-            config.Config.Add(";1", "Basic Settings");
-            config.Config.Add("Language", Language);
-            config.Config.Add("WriteLog", WriteLog.ToString());
-            config.Config.Add("CloseAfterBackup", CloseAfterBackup.ToString());
-            config.Config.Add("CompressionLevel", CompressLevel.ToString());
-            config.Config.Add("StandartMode", StandartMode.ToString());
-            if (WinRarExePath != string.Empty)
-                config.Config.Add("WinRar.ExePath", WinRarExePath);
-            config.Config.Add(";2", "Additional settings");
-            config.Config.Add("ProgressColor", $"{ProgressColor.Color.R}:{ProgressColor.Color.G}:{ProgressColor.Color.B}");
-            config.Save();
+            Directory.CreateDirectory(ProgramResourceFolder);
+            using (StreamWriter streamWriter = new StreamWriter($"{ProgramResourceFolder}\\settings.json", false, Encoding.UTF8))
+                streamWriter.Write(JsonConvert.SerializeObject(this, Formatting.Indented));
         }
         /// <summary>
-        /// Загрузка настроек
+        /// Получает объект с загружеными настройками
         /// </summary>
-        public void Load()
+        public static SettingsProgram GetInstance()
         {
-            pathConfig = Registry.GetPathSettings(pathConfig);
-            ConfigFile config = new ConfigFile($"{pathConfig}\\{App.ProgramName}.cfg");
-            if (config.Load())
-            {        
-                if (config.Config.ContainsKey("WriteLog"))
-                    WriteLog = Convert.ToBoolean(config.Config["WriteLog"]);
-                if (config.Config.ContainsKey("CloseAfterBackup"))
-                    CloseAfterBackup = Convert.ToBoolean(config.Config["CloseAfterBackup"]);
-                if (config.Config.ContainsKey("CompressionLevel"))
-                    CompressLevel = Convert.ToInt32(config.Config["CompressionLevel"]);
-                if (config.Config.ContainsKey("StandartMode"))
-                    StandartMode = Convert.ToBoolean(config.Config["StandartMode"]);
-                if (config.Config.ContainsKey("WinRar.ExePath"))
-                    WinRarExePath = config.Config["WinRar.ExePath"];
-                if (config.Config.ContainsKey("ProgressColor"))
-                {
-                    string[] col = config.Config["ProgressColor"].Split(':');
-                    ProgressColor = new SolidColorBrush(Color.FromArgb(255, Convert.ToByte(col[0]), Convert.ToByte(col[1]), Convert.ToByte(col[2])));
-                }
-                if (config.Config.Keys.Contains("Language"))
-                    Language = config.Config["Language"].ToLower();
-                else
-                    Language = "english";
-            }
-            else
-            {
-                Language = "english";
-            }
+            string settingsFile = $"{ProgramResourceFolder}\\settings.json";
+            if (File.Exists(settingsFile))
+                return JsonConvert.DeserializeObject<SettingsProgram>(File.ReadAllText(settingsFile, Encoding.UTF8));
+            return new SettingsProgram();
         }
     }
 }
