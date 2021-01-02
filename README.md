@@ -13,6 +13,12 @@
 Создает резервную копию выбранных директорий и файлов. Резервная копия представляет собой один файл - архив.
 
 Архив может быть 2-х форматов zip и rar (создается, если в параметрах программы указано использовать программу WinRar).
+### Скрытые настройки
+Файл с настройками приложения можно найти по пути: "Документы\SergeyGovorunov\Backup\settings.json".  
+**Если настройки по умолчанию не изменялись, то файла не будет!**
+Настройка|Описание
+---|---
+ProgressColor|Цвет полос прогресса. Шестнадцатеричное представление цвета в формате ARGB.
 
 
 ## English
@@ -29,3 +35,9 @@
 Creates a backup copy of the selected directories and files. A backup is a single file-archive.
 
 The archive can be in 2 formats zip and rar (created if the program parameters specify to use the WinRar program).
+### Hidden settings
+You can find the file with the app settings on the path: "Documents\SergeyGovorunov\Backup\settings.json".  
+**If you have not changed the default settings, the file will not be.**
+Setting|Description
+---|---
+MenuBackgroundMouseOver|The color of the progress bars. Hexadecimal representation of color in ARGB format.
